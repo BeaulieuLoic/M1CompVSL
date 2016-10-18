@@ -7,8 +7,23 @@ options {
 }
 
 s [SymbolTable symTab] returns [Code3a code]
-  : e=expression[symTab] { code = e.code; }
+  : stat=statement[symTab] { code = stat.code; }
   ;
+
+
+statement [SymbolTable symTab] return [Code3a code]
+  : stat=expression[symTab] { code = stat.code; }
+//  | aff=affectation { code = aff; }
+  ;
+
+/*
+affectation [SymbolTable symTab] returns [Code3a code]
+: ^(IDENT ASSIGN_KW expression)
+;
+*/
+
+
+
 
 expression [SymbolTable symTab] returns [ExpAttribute expAtt]
   : ^(PLUS e1=expression[symTab] e2=expression[symTab]) 
@@ -41,8 +56,6 @@ expression [SymbolTable symTab] returns [ExpAttribute expAtt]
     }
   | pe=primary_exp[symTab] 
     { expAtt = pe; }
-  
-
   ;
 
 

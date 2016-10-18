@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 ./src/VSLTreeParser.g 2016-10-18 09:29:00
+// $ANTLR 3.5.2 ./src/VSLTreeParser.g 2016-10-18 09:52:36
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
@@ -85,9 +85,9 @@ public class VSLTreeParser extends TreeParser {
 
 
 
-	// $ANTLR start "s"
-	// ./src/VSLTreeParser.g:9:1: s[SymbolTable symTab] returns [Code3a code] : e= expression[symTab] ;
-	public final Code3a s(SymbolTable symTab) throws RecognitionException {
+	// $ANTLR start "sdjhagd"
+	// ./src/VSLTreeParser.g:9:1: sdjhagd[SymbolTable symTab] returns [Code3a code] : e= expression[symTab] ;
+	public final Code3a sdjhagd(SymbolTable symTab) throws RecognitionException {
 		Code3a code = null;
 
 
@@ -97,7 +97,7 @@ public class VSLTreeParser extends TreeParser {
 			// ./src/VSLTreeParser.g:10:3: (e= expression[symTab] )
 			// ./src/VSLTreeParser.g:10:5: e= expression[symTab]
 			{
-			pushFollow(FOLLOW_expression_in_s60);
+			pushFollow(FOLLOW_expression_in_sdjhagd60);
 			e=expression(symTab);
 			state._fsp--;
 
@@ -114,7 +114,7 @@ public class VSLTreeParser extends TreeParser {
 		}
 		return code;
 	}
-	// $ANTLR end "s"
+	// $ANTLR end "sdjhagd"
 
 
 
@@ -283,7 +283,7 @@ public class VSLTreeParser extends TreeParser {
 
 
 	// $ANTLR start "primary_exp"
-	// ./src/VSLTreeParser.g:49:1: primary_exp[SymbolTable symTab] returns [ExpAttribute expAtt] : ( INTEGER | IDENT );
+	// ./src/VSLTreeParser.g:47:1: primary_exp[SymbolTable symTab] returns [ExpAttribute expAtt] : ( INTEGER | IDENT );
 	public final ExpAttribute primary_exp(SymbolTable symTab) throws RecognitionException {
 		ExpAttribute expAtt = null;
 
@@ -292,7 +292,7 @@ public class VSLTreeParser extends TreeParser {
 		CommonTree IDENT2=null;
 
 		try {
-			// ./src/VSLTreeParser.g:50:3: ( INTEGER | IDENT )
+			// ./src/VSLTreeParser.g:48:3: ( INTEGER | IDENT )
 			int alt2=2;
 			int LA2_0 = input.LA(1);
 			if ( (LA2_0==INTEGER) ) {
@@ -310,9 +310,9 @@ public class VSLTreeParser extends TreeParser {
 
 			switch (alt2) {
 				case 1 :
-					// ./src/VSLTreeParser.g:50:5: INTEGER
+					// ./src/VSLTreeParser.g:48:5: INTEGER
 					{
-					INTEGER1=(CommonTree)match(input,INTEGER,FOLLOW_INTEGER_in_primary_exp214); 
+					INTEGER1=(CommonTree)match(input,INTEGER,FOLLOW_INTEGER_in_primary_exp210); 
 
 					      ConstSymbol cs = new ConstSymbol(Integer.parseInt((INTEGER1!=null?INTEGER1.getText():null)));
 					      expAtt = new ExpAttribute(Type.INT, new Code3a(), cs);
@@ -320,9 +320,9 @@ public class VSLTreeParser extends TreeParser {
 					}
 					break;
 				case 2 :
-					// ./src/VSLTreeParser.g:55:5: IDENT
+					// ./src/VSLTreeParser.g:53:5: IDENT
 					{
-					IDENT2=(CommonTree)match(input,IDENT,FOLLOW_IDENT_in_primary_exp226); 
+					IDENT2=(CommonTree)match(input,IDENT,FOLLOW_IDENT_in_primary_exp222); 
 
 					      Operand3a id = symTab.lookup((IDENT2!=null?IDENT2.getText():null));
 					      expAtt = new ExpAttribute(id.type, new Code3a(), symTab.lookup((IDENT2!=null?IDENT2.getText():null)));
@@ -347,7 +347,7 @@ public class VSLTreeParser extends TreeParser {
 
 
 
-	public static final BitSet FOLLOW_expression_in_s60 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_expression_in_sdjhagd60 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_PLUS_in_expression83 = new BitSet(new long[]{0x0000000000000004L});
 	public static final BitSet FOLLOW_expression_in_expression87 = new BitSet(new long[]{0x0000000002C14200L});
 	public static final BitSet FOLLOW_expression_in_expression92 = new BitSet(new long[]{0x0000000000000008L});
@@ -361,6 +361,6 @@ public class VSLTreeParser extends TreeParser {
 	public static final BitSet FOLLOW_expression_in_expression160 = new BitSet(new long[]{0x0000000002C14200L});
 	public static final BitSet FOLLOW_expression_in_expression165 = new BitSet(new long[]{0x0000000000000008L});
 	public static final BitSet FOLLOW_primary_exp_in_expression182 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_INTEGER_in_primary_exp214 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_IDENT_in_primary_exp226 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_INTEGER_in_primary_exp210 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_IDENT_in_primary_exp222 = new BitSet(new long[]{0x0000000000000002L});
 }

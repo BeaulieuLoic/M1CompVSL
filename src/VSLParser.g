@@ -13,7 +13,7 @@ options {
 tokens  {BLOCK; PROG; ARRAY; ARELEM; ARDECL; PARAM; BODY; DECL; INST; FCALL; FCALL_S;NEGAT;}
 
 s
-    : program
+    : program 
     ;
 
 program
@@ -74,7 +74,7 @@ inst_list
     ;
 
 expression
-    : factor ((PLUS^|MINUS^) factor)*
+    :  factor ((PLUS^|MINUS^) factor)*
     ;
 
 factor
