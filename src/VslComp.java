@@ -63,6 +63,8 @@ public class VslComp {
 			// an expression). >>>
 			VSLParser.statement_return r = parser.statement();
 			// The parser produces an AST.
+			System.out.println("\nParcours de l'AST\n");
+
 			CommonTree t = (CommonTree) r.getTree();
 			// If debugging is on, this prints the resulting tree in LISP
 			// notation

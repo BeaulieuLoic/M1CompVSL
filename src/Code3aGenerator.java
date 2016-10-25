@@ -35,4 +35,21 @@ public class Code3aGenerator {
 		return cod;
 	}
 
+	public static Code3a genAff(String name, ExpAttribute exp, SymbolTable symTab){
+		if(symTab.lookup(name) ==null){
+		//trycatch ? ou error
+		}else{
+			Code3a cod = exp.code;
+        	VarSymbol temp = new VarSymbol(Type.INT,name, symTab.getScope());
+
+
+			symTab.insert(name,temp);
+
+			cod.append(new Inst3a(Inst3a.TAC.COPY,  temp, exp.place, null));
+			return cod;
+		}
+	}
+
+
+
 } // Code3aGenerator ***

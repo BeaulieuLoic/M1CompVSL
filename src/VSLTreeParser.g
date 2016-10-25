@@ -7,27 +7,55 @@ options {
 }
 
 s [SymbolTable symTab] returns [Code3a code]
-  : stat=statement[symTab] { code = stat.code; }
+  : 
+  stat=statement[symTab] { code = stat; symTab.print();}
   ;
 
 
-statement [SymbolTable symTab] return [Code3a code]
-  : stat=expression[symTab] { code = stat.code; }
-//  | aff=affectation { code = aff; }
+statement [SymbolTable symTab] returns [Code3a code]
+  :
+    aff=affectation[symTab] { code = aff; }
+  | {symTab.enterScope();} b=block[symTab] {symTab.leaveScope();} { code = b; }
   ;
+
+block[SymbolTable symTab] returns [Code3a code]
+  :
+//    ^(BLOCK declaration l=inst_list[symTab]) {code = l;}
+  /*|*/ ^(BLOCK l=inst_list[symTab]) {code = l;}
+  ;
+
+inst_list[SymbolTable symTab] returns [Code3a code]
+    :  {code = new Code3a();} ^(INST (stat=statement[symTab] {code.append(stat);})+  )
+    ;
+
+//besoin d'implementer les declarations avant de finir les blocs (cf Code3aGenerator.java)
 
 /*
-affectation [SymbolTable symTab] returns [Code3a code]
-: ^(IDENT ASSIGN_KW expression)
-;
+declaration
+    : ^(DECL decl_list+)
+    ;
+
+decl_list
+    : decl_item (COM! decl_item)*
+    ;
+decl_item
+    : IDENT
+    | ^(ARDECL IDENT INTEGER)
+    ;
 */
 
+
+
+affectation [SymbolTable symTab] returns [Code3a code]
+: ^(ASSIGN_KW e=expression[symTab] IDENT) {code = Code3aGenerator.genAff($IDENT.text,e,symTab) ;}
+;
 
 
 
 expression [SymbolTable symTab] returns [ExpAttribute expAtt]
   : ^(PLUS e1=expression[symTab] e2=expression[symTab]) 
     { 
+
       Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
       VarSymbol temp = SymbDistrib.newTemp();
       Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.ADD, temp, e1, e2);
