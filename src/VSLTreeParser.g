@@ -7,8 +7,8 @@ options {
 }
 
 s [SymbolTable symTab] returns [Code3a code]
-  : 
-  stat=statement[symTab] { code = stat; symTab.print();}
+  : {code = new Code3a();}
+  stat=statement[symTab] { code.append(stat); symTab.print();}
   ;
 
 
@@ -20,42 +20,59 @@ statement [SymbolTable symTab] returns [Code3a code]
 
 block[SymbolTable symTab] returns [Code3a code]
   :
-//    ^(BLOCK declaration l=inst_list[symTab]) {code = l;}
-  /*|*/ ^(BLOCK l=inst_list[symTab]) {code = l;}
+    ^(BLOCK dec=declaration[symTab] l=inst_list[symTab]) {dec.append(l);code = dec;}
+  | ^(BLOCK l=inst_list[symTab]) {code = l;}
   ;
 
 inst_list[SymbolTable symTab] returns [Code3a code]
     :  {code = new Code3a();} ^(INST (stat=statement[symTab] {code.append(stat);})+  )
     ;
 
-//besoin d'implementer les declarations avant de finir les blocs (cf Code3aGenerator.java)
+declaration[SymbolTable symTab] returns [Code3a code]
+  : ^(DECL {code=new Code3a();} (dl=decl_list[symTab] {code.append(dl);} )+ )
+  ;
 
-/*
-declaration
-    : ^(DECL decl_list+)
-    ;
+decl_list[SymbolTable symTab] returns [Code3a code]
+  : di=decl_item[symTab] {code=di;} (COM di=decl_item[symTab] {code.append(di);})*
+  ;
+decl_item[SymbolTable symTab] returns [Code3a code]
+  : IDENT 
+    {
+      if(symTab.lookup($IDENT.text)==null
+      || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
+        VarSymbol op = new VarSymbol(Type.INT, $IDENT.text, symTab.getScope());
+        symTab.insert($IDENT.text,op);
 
-decl_list
-    : decl_item (COM! decl_item)*
-    ;
-decl_item
-    : IDENT
-    | ^(ARDECL IDENT INTEGER)
-    ;
-*/
+        code = Code3aGenerator.genVar(op);
+      }else{
+        System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+      }
 
+    }
+  | ^(ARDECL IDENT INTEGER)// tableau
+    {
+      if(symTab.lookup($IDENT.text)==null
+      || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
+        int sizeArray = Integer.parseInt($INTEGER.text);
+    
+        VarSymbol op = new VarSymbol(new Type("ARRAY",4*sizeArray), $IDENT.text, symTab.getScope());
+        symTab.insert($IDENT.text,op);
+
+        code = Code3aGenerator.genVar(op);
+      }else{
+        System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+      }
+    }
+  ;
 
 
 affectation [SymbolTable symTab] returns [Code3a code]
-: ^(ASSIGN_KW e=expression[symTab] IDENT) {code = Code3aGenerator.genAff($IDENT.text,e,symTab) ;}
+: ^(ASSIGN_KW e=expression[symTab] IDENT) {code = Code3aGenerator.genAff($IDENT.text,e,symTab);}
 ;
-
-
 
 expression [SymbolTable symTab] returns [ExpAttribute expAtt]
   : ^(PLUS e1=expression[symTab] e2=expression[symTab]) 
     { 
-
       Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
       VarSymbol temp = SymbDistrib.newTemp();
       Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.ADD, temp, e1, e2);
@@ -96,6 +113,10 @@ primary_exp [SymbolTable symTab] returns [ExpAttribute expAtt]
   | IDENT
     {
       Operand3a id = symTab.lookup($IDENT.text);
-      expAtt = new ExpAttribute(id.type, new Code3a(), symTab.lookup($IDENT.text));
+      if (id == null) {
+        System.out.println("Erreur primary_exp -> la variable "+$IDENT.text+ " n'existe pas");
+      }else{
+        expAtt = new ExpAttribute(id.type, new Code3a(), id);
+      }
     }
   ;

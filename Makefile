@@ -3,7 +3,7 @@
 # Vérifiez bien les valeurs suivantes avant de procéder.
 # -----------------------------------------------------------------------------
 
-ANTLR_JAR=/private/student/9/89/16009989/cours/m1/comp/TP2/TP2-antlr/antlr/antlr-3.5.2-complete.jar
+ANTLR_JAR=antlr/antlr-3.5.2-complete.jar
 SRC_DIR=./src
 
 

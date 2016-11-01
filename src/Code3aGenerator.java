@@ -38,6 +38,8 @@ public class Code3aGenerator {
 	public static Code3a genAff(String name, ExpAttribute exp, SymbolTable symTab){
 		if(symTab.lookup(name) ==null){
 		//trycatch ? ou error
+			System.out.println("Erreur genAff -> variable " + name+" non déclaré");
+			return null;
 		}else{
 			Code3a cod = exp.code;
         	VarSymbol temp = new VarSymbol(Type.INT,name, symTab.getScope());

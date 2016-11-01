@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 ./src/VSLParser.g 2016-10-25 09:23:12
+// $ANTLR 3.5.2 ./src/VSLParser.g 2016-11-01 17:54:58
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -367,9 +367,9 @@ public class VSLParser extends Parser {
 		Object LP8_tree=null;
 		Object RP10_tree=null;
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
-		RewriteRuleTokenStream stream_FUNC_KW=new RewriteRuleTokenStream(adaptor,"token FUNC_KW");
 		RewriteRuleTokenStream stream_RP=new RewriteRuleTokenStream(adaptor,"token RP");
+		RewriteRuleTokenStream stream_FUNC_KW=new RewriteRuleTokenStream(adaptor,"token FUNC_KW");
+		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
 		RewriteRuleSubtreeStream stream_statement=new RewriteRuleSubtreeStream(adaptor,"rule statement");
 		RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
 		RewriteRuleSubtreeStream stream_param_list=new RewriteRuleSubtreeStream(adaptor,"rule param_list");
@@ -406,7 +406,7 @@ public class VSLParser extends Parser {
 
 			stream_statement.add(statement11.getTree());
 			// AST REWRITE
-			// elements: IDENT, statement, FUNC_KW, type, param_list
+			// elements: param_list, statement, FUNC_KW, type, IDENT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -809,9 +809,9 @@ public class VSLParser extends Parser {
 		Object IDENT24_tree=null;
 		Object LB25_tree=null;
 		Object RB26_tree=null;
-		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
 		RewriteRuleTokenStream stream_LB=new RewriteRuleTokenStream(adaptor,"token LB");
+		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
 
 		try {
 			// ./src/VSLParser.g:47:5: ( IDENT | IDENT LB RB -> ^( ARRAY IDENT ) )
@@ -982,12 +982,12 @@ public class VSLParser extends Parser {
 		Object LP52_tree=null;
 		Object RP54_tree=null;
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
 		RewriteRuleTokenStream stream_ASSIGN_KW=new RewriteRuleTokenStream(adaptor,"token ASSIGN_KW");
 		RewriteRuleTokenStream stream_RP=new RewriteRuleTokenStream(adaptor,"token RP");
-		RewriteRuleSubtreeStream stream_array_elem=new RewriteRuleSubtreeStream(adaptor,"rule array_elem");
-		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
+		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
 		RewriteRuleSubtreeStream stream_argument_list=new RewriteRuleSubtreeStream(adaptor,"rule argument_list");
+		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
+		RewriteRuleSubtreeStream stream_array_elem=new RewriteRuleSubtreeStream(adaptor,"rule array_elem");
 
 		try {
 			// ./src/VSLParser.g:52:5: ( IDENT ASSIGN_KW expression -> ^( ASSIGN_KW expression IDENT ) | array_elem ASSIGN_KW expression -> ^( ASSIGN_KW expression array_elem ) | RETURN_KW ^ expression | PRINT_KW ^ print_list | READ_KW ^ read_list | IF_KW ^ expression THEN_KW ! statement ( ELSE_KW ! statement )? FI_KW !| WHILE_KW ^ expression DO_KW ! statement OD_KW !| IDENT LP ( argument_list )? RP -> ^( FCALL_S IDENT ( argument_list )? ) | block )
@@ -1075,7 +1075,7 @@ public class VSLParser extends Parser {
 
 					stream_expression.add(expression29.getTree());
 					// AST REWRITE
-					// elements: expression, IDENT, ASSIGN_KW
+					// elements: expression, ASSIGN_KW, IDENT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1120,7 +1120,7 @@ public class VSLParser extends Parser {
 
 					stream_expression.add(expression32.getTree());
 					// AST REWRITE
-					// elements: array_elem, expression, ASSIGN_KW
+					// elements: array_elem, ASSIGN_KW, expression
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1309,7 +1309,7 @@ public class VSLParser extends Parser {
 					stream_RP.add(RP54);
 
 					// AST REWRITE
-					// elements: IDENT, argument_list
+					// elements: argument_list, IDENT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1404,10 +1404,10 @@ public class VSLParser extends Parser {
 		Object RC59_tree=null;
 		Object LC60_tree=null;
 		Object RC62_tree=null;
-		RewriteRuleTokenStream stream_RC=new RewriteRuleTokenStream(adaptor,"token RC");
 		RewriteRuleTokenStream stream_LC=new RewriteRuleTokenStream(adaptor,"token LC");
-		RewriteRuleSubtreeStream stream_inst_list=new RewriteRuleSubtreeStream(adaptor,"rule inst_list");
+		RewriteRuleTokenStream stream_RC=new RewriteRuleTokenStream(adaptor,"token RC");
 		RewriteRuleSubtreeStream stream_declaration=new RewriteRuleSubtreeStream(adaptor,"rule declaration");
+		RewriteRuleSubtreeStream stream_inst_list=new RewriteRuleSubtreeStream(adaptor,"rule inst_list");
 
 		try {
 			// ./src/VSLParser.g:64:5: ( LC declaration inst_list RC -> ^( BLOCK declaration inst_list ) | LC inst_list RC -> ^( BLOCK inst_list ) )
@@ -1463,7 +1463,7 @@ public class VSLParser extends Parser {
 					stream_RC.add(RC59);
 
 					// AST REWRITE
-					// elements: declaration, inst_list
+					// elements: inst_list, declaration
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1577,9 +1577,9 @@ public class VSLParser extends Parser {
 		Object IDENT63_tree=null;
 		Object LB64_tree=null;
 		Object RB66_tree=null;
-		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
 		RewriteRuleTokenStream stream_LB=new RewriteRuleTokenStream(adaptor,"token LB");
+		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
 		RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
 
 		try {
@@ -1601,7 +1601,7 @@ public class VSLParser extends Parser {
 			stream_RB.add(RB66);
 
 			// AST REWRITE
-			// elements: IDENT, expression
+			// elements: expression, IDENT
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -2036,9 +2036,9 @@ public class VSLParser extends Parser {
 		Object RP85_tree=null;
 		Object MINUS86_tree=null;
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
-		RewriteRuleTokenStream stream_RP=new RewriteRuleTokenStream(adaptor,"token RP");
 		RewriteRuleTokenStream stream_MINUS=new RewriteRuleTokenStream(adaptor,"token MINUS");
+		RewriteRuleTokenStream stream_RP=new RewriteRuleTokenStream(adaptor,"token RP");
+		RewriteRuleTokenStream stream_LP=new RewriteRuleTokenStream(adaptor,"token LP");
 		RewriteRuleSubtreeStream stream_argument_list=new RewriteRuleSubtreeStream(adaptor,"rule argument_list");
 		RewriteRuleSubtreeStream stream_primary=new RewriteRuleSubtreeStream(adaptor,"rule primary");
 
@@ -2191,7 +2191,7 @@ public class VSLParser extends Parser {
 					stream_RP.add(RP82);
 
 					// AST REWRITE
-					// elements: argument_list, IDENT
+					// elements: IDENT, argument_list
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -2957,10 +2957,10 @@ public class VSLParser extends Parser {
 		Object LB108_tree=null;
 		Object INTEGER109_tree=null;
 		Object RB110_tree=null;
-		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
+		RewriteRuleTokenStream stream_INTEGER=new RewriteRuleTokenStream(adaptor,"token INTEGER");
 		RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
 		RewriteRuleTokenStream stream_LB=new RewriteRuleTokenStream(adaptor,"token LB");
-		RewriteRuleTokenStream stream_INTEGER=new RewriteRuleTokenStream(adaptor,"token INTEGER");
+		RewriteRuleTokenStream stream_RB=new RewriteRuleTokenStream(adaptor,"token RB");
 
 		try {
 			// ./src/VSLParser.g:124:5: ( IDENT | IDENT LB INTEGER RB -> ^( ARDECL IDENT INTEGER ) )
