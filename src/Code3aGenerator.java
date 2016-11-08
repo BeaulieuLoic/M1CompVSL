@@ -51,6 +51,11 @@ public class Code3aGenerator {
 			return cod;
 		}
 	}
+/*
+	public static Code3a genLabel(String nameLb){
+		return new Inst3a(Inst3a.TAC.LABEL, nameLb,null,null);
+	}*/
+
 
 
 

@@ -12,11 +12,21 @@ s [SymbolTable symTab] returns [Code3a code]
   ;
 
 
-statement [SymbolTable symTab] returns [Code3a code]
+statement[SymbolTable symTab] returns [Code3a code]
   :
     aff=affectation[symTab] { code = aff; }
   | {symTab.enterScope();} b=block[symTab] {symTab.leaveScope();} { code = b; }
+  //| ifStatement
   ;
+
+
+// ifStatement[SymbolTable symTab] returns [Code3a code]
+//   : ^(IF_KW e=expression[symTab]  s1=statement[symTab] {s2=null} (s2=statement[symTab])?)
+//     {
+//       code.append(e.code); code.append(new Inst3a(Inst3a.TAC.IFZ,/*l0*/ , e.place, null));
+//       code.append(s1); /*goto l1*/ /*label l0*/ code.append(s2) /*label l1*/ 
+//     }
+//   ;
 
 block[SymbolTable symTab] returns [Code3a code]
   :
@@ -73,38 +83,53 @@ affectation [SymbolTable symTab] returns [Code3a code]
 expression [SymbolTable symTab] returns [ExpAttribute expAtt]
   : ^(PLUS e1=expression[symTab] e2=expression[symTab]) 
     { 
-      Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
-      VarSymbol temp = SymbDistrib.newTemp();
-      Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.ADD, temp, e1, e2);
-      expAtt = new ExpAttribute(ty, cod, temp);
+      if(TypeCheck.checkBinOpError($PLUS, e1.type, e2.type)){
+        VarSymbol temp = SymbDistrib.newTemp();
+        Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.ADD, temp, e1, e2);
+        expAtt = new ExpAttribute(Type.INT, cod, temp);
+      }else{
+        System.exit(0);
+      }
     }
   |^(MINUS e1=expression[symTab] e2=expression[symTab]) 
     { 
-      Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
-      VarSymbol temp = SymbDistrib.newTemp();
-      Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.SUB, temp, e1, e2);
-      expAtt = new ExpAttribute(ty, cod, temp);
+
+      if (TypeCheck.checkBinOpError($MINUS, e1.type, e2.type)) {
+        VarSymbol temp = SymbDistrib.newTemp();
+        Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.SUB, temp, e1, e2);
+        expAtt = new ExpAttribute(Type.INT, cod, temp); 
+      }else{
+        System.exit(0);
+      }
     }
   |^(MUL e1=expression[symTab] e2=expression[symTab]) 
     { 
-      Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
-      VarSymbol temp = SymbDistrib.newTemp();
-      Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.MUL, temp, e1, e2);
-      expAtt = new ExpAttribute(ty, cod, temp);
+;
+      if(TypeCheck.checkBinOpError($MUL, e1.type, e2.type)){
+          VarSymbol temp = SymbDistrib.newTemp();
+          Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.MUL, temp, e1, e2);
+          expAtt = new ExpAttribute(Type.INT, cod, temp);
+      }else{
+        System.exit(0);
+      }
     }
   | ^(DIV e1=expression[symTab] e2=expression[symTab]) 
     { 
-      Type ty = TypeCheck.checkBinOp(e1.type, e2.type);
-      VarSymbol temp = SymbDistrib.newTemp();
-      Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.DIV, temp, e1, e2);
-      expAtt = new ExpAttribute(ty, cod, temp);
+      if(TypeCheck.checkBinOpError($DIV, e1.type, e2.type)){
+        VarSymbol temp = SymbDistrib.newTemp();
+        Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.DIV, temp, e1, e2);
+        expAtt = new ExpAttribute(Type.INT, cod, temp);
+      }else{
+        System.exit(0);
+      }
+
     }
-  | pe=primary_exp[symTab] 
+  | pe=primary[symTab] 
     { expAtt = pe; }
   ;
 
 
-primary_exp [SymbolTable symTab] returns [ExpAttribute expAtt]
+primary [SymbolTable symTab] returns [ExpAttribute expAtt]
   : INTEGER
     {
       ConstSymbol cs = new ConstSymbol(Integer.parseInt($INTEGER.text));
@@ -114,9 +139,23 @@ primary_exp [SymbolTable symTab] returns [ExpAttribute expAtt]
     {
       Operand3a id = symTab.lookup($IDENT.text);
       if (id == null) {
-        System.out.println("Erreur primary_exp -> la variable "+$IDENT.text+ " n'existe pas");
+        System.out.println("Erreur primary -> la variable "+$IDENT.text+ " n'existe pas");
       }else{
         expAtt = new ExpAttribute(id.type, new Code3a(), id);
       }
     }
+  | ^(NEGAT e2=primary[symTab])
+    {
+      ConstSymbol cs = new ConstSymbol(0);
+      ExpAttribute expZero = new ExpAttribute(Type.INT, new Code3a(), cs);
+
+      if (TypeCheck.checkBinOpError($NEGAT, expZero.type, e2.type)) {
+        VarSymbol temp = SymbDistrib.newTemp();
+        Code3a cod = Code3aGenerator.genBinOp(Inst3a.TAC.SUB, temp, expZero, e2);
+        expAtt = new ExpAttribute(Type.INT, cod, temp);
+      }else{
+        System.exit(0);
+      }
+    }
+
   ;
