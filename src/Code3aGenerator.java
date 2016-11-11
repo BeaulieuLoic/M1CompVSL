@@ -8,6 +8,9 @@
  */
 public class Code3aGenerator {
 
+	public static int nbLabel=0;
+
+
 	// Constructor not needed
 	private Code3aGenerator() {
 	}
@@ -51,10 +54,19 @@ public class Code3aGenerator {
 			return cod;
 		}
 	}
-/*
-	public static Code3a genLabel(String nameLb){
-		return new Inst3a(Inst3a.TAC.LABEL, nameLb,null,null);
-	}*/
+
+	public static Code3a genIfz(Operand3a place, LabelSymbol l){
+		return new Code3a(new Inst3a(Inst3a.TAC.IFZ, place, l, null));
+	}
+
+
+	public static Code3a genCodeLabel(LabelSymbol l){
+		return new Code3a(new Inst3a(Inst3a.TAC.LABEL, l, null, null));
+	}
+
+	public static Code3a genGoto(LabelSymbol l){
+		return new Code3a(new Inst3a(Inst3a.TAC.GOTO, l, null, null));
+	}
 
 
 

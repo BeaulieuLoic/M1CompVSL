@@ -8,6 +8,9 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
+// java -cp ../../antlr/antlr-3.5.2-complete.jar: VslComp ../tests/ourtest/simple.vsl 
+
+
 /**
  * Entry point of the compiler, containing the <code>main</code> function.
  * 
@@ -61,7 +64,7 @@ public class VslComp {
 			// <<< NOTE: this line must be changed during development, if one
 			// wishes to parse just a fragment of the language (e.g. begin with
 			// an expression). >>>
-			VSLParser.statement_return r = parser.statement();
+			VSLParser.s_return r = parser.s();
 			// The parser produces an AST.
 			System.out.println("\nParcours de l'AST\n");
 

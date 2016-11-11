@@ -7,26 +7,126 @@ options {
 }
 
 s [SymbolTable symTab] returns [Code3a code]
-  : {code = new Code3a();}
-  stat=statement[symTab] { code.append(stat); symTab.print();}
+  :
+    p=program[symTab] 
+    {
+      code = p; symTab.print();
+    }
   ;
 
+program[SymbolTable symTab] returns [Code3a code]
+    : {code = new Code3a();}
+      ^(PROG  (u=unit[symTab] {code.append(u);} )+)
+
+    ;
+
+unit [SymbolTable symTab] returns [Code3a code]
+  : f = function[symTab] {code = f;}
+  | proto[symTab] {code = new Code3a();}
+  ;
+
+function [SymbolTable symTab] returns [Code3a code]
+  : ^(FUNC_KW typeFonction=type IDENT listeParam=param_list  ^(BODY stat=statement[symTab]))
+  {
+    // verif que iden est pas déja déclaré (sauf si c'est un proto)
+
+    code = new Code3a();
+    
+    /* code labelNomFonction */
+    /* code beginFunction */
+    /* code init var param */
+
+    code.append(stat);
+
+
+
+    /* code return (si type != void) */
+    /* code endFunction */
+  }
+  ;
+
+proto [SymbolTable symTab]
+    : ^(PROTO_KW typeProto=type IDENT param_list)
+    {
+      
+      //verif que le proto n'existe pas déjà
+      /*if (symTab.lookup($IDENT.text) != null 
+        && symTab.lookup($IDENT.text).) {
+        
+      }*/
+
+      LabelSymbol lb = new LabelSymbol($IDENT.text);
+
+      FunctionType typeFunc = new FunctionType(typeProto,true);
+      FunctionSymbol protoFonction = new FunctionSymbol(lb,typeFunc);
+
+
+      
+      
+
+    }
+    ;
+
+type returns [Type type]
+    : INT_KW {type = Type.INT;}
+    | VOID_KW {type = Type.VOID;}
+    ;
+
+param_list 
+    : ^(PARAM param*)
+    | PARAM
+    ;
+
+param
+    : IDENT
+    | ^(ARRAY IDENT)
+    ;
 
 statement[SymbolTable symTab] returns [Code3a code]
   :
     aff=affectation[symTab] { code = aff; }
   | {symTab.enterScope();} b=block[symTab] {symTab.leaveScope();} { code = b; }
-  //| ifStatement
+  | i = ifStatement[symTab] {code = i;}
+  | w = whileStatement[symTab] {code = w;}
   ;
 
+whileStatement[SymbolTable symTab] returns [Code3a code]
+  :
+    ^(WHILE_KW e=expression[symTab] s1=statement[symTab])
+    {
+      LabelSymbol lDebut = SymbDistrib.newLabel();      
+      LabelSymbol lFin = SymbDistrib.newLabel();
 
-// ifStatement[SymbolTable symTab] returns [Code3a code]
-//   : ^(IF_KW e=expression[symTab]  s1=statement[symTab] {s2=null} (s2=statement[symTab])?)
-//     {
-//       code.append(e.code); code.append(new Inst3a(Inst3a.TAC.IFZ,/*l0*/ , e.place, null));
-//       code.append(s1); /*goto l1*/ /*label l0*/ code.append(s2) /*label l1*/ 
-//     }
-//   ;
+      code = Code3aGenerator.genCodeLabel(lDebut);/* lDebut */
+      code.append(e.code); /* exp */
+      code.append(Code3aGenerator.genIfz(e.place, lFin));/* ifz lFin*/
+      code.append(s1);/* code s1 */
+      code.append(Code3aGenerator.genGoto(lDebut));/* goto LabelDebut */
+      code.append(Code3aGenerator.genCodeLabel(lFin));/* LabelFin */
+    }
+  ;
+
+ifStatement[SymbolTable symTab] returns [Code3a code]
+  : ^(IF_KW e=expression[symTab]  s1=statement[symTab] {s2=null;} (s2=statement[symTab])?)
+    {
+      LabelSymbol l0 = SymbDistrib.newLabel();
+
+      code = e.code; /*exp*/
+      code.append(Code3aGenerator.genIfz(e.place, l0)); /* ifz goto l0*/
+      code.append(s1);  /* code s1 */
+
+      if (s2 == null) {
+        code.append(Code3aGenerator.genCodeLabel(l0));/*label l0*/
+      }else{// si il y à un else
+        LabelSymbol l1 = SymbDistrib.newLabel();  
+        
+        code.append(Code3aGenerator.genGoto(l1));/*goto l1*/
+        code.append(Code3aGenerator.genCodeLabel(l0));/*label l0*/
+        code.append(s2); /* code s2*/
+        code.append(Code3aGenerator.genCodeLabel(l1));/*label l1*/
+      }
+    }
+  ;
 
 block[SymbolTable symTab] returns [Code3a code]
   :
@@ -64,8 +164,8 @@ decl_item[SymbolTable symTab] returns [Code3a code]
       if(symTab.lookup($IDENT.text)==null
       || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
         int sizeArray = Integer.parseInt($INTEGER.text);
-    
-        VarSymbol op = new VarSymbol(new Type("ARRAY",4*sizeArray), $IDENT.text, symTab.getScope());
+        ArrayType tableau = new ArrayType(Type.INT, sizeArray);
+        VarSymbol op = new VarSymbol(tableau, $IDENT.text, symTab.getScope());
         symTab.insert($IDENT.text,op);
 
         code = Code3aGenerator.genVar(op);

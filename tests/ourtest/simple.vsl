@@ -1,4 +1,10 @@
+FUNC VOID main()
 {
 	INT a, b, c[5]
-	a := -e
+	WHILE a
+	DO
+	{
+		a := b
+	}
+	DONE
 }
