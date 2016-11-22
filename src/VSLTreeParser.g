@@ -11,7 +11,10 @@ s [SymbolTable symTab] returns [Code3a code]
     p=program[symTab] 
     {
       code = p; symTab.print();
+      //verif que tout les proto sont définit
     }
+
+
   ;
 
 program[SymbolTable symTab] returns [Code3a code]
@@ -28,42 +31,76 @@ unit [SymbolTable symTab] returns [Code3a code]
 function [SymbolTable symTab] returns [Code3a code]
   : ^(FUNC_KW typeFonction=type IDENT listeParam=param_list  ^(BODY stat=statement[symTab]))
   {
-    // verif que iden est pas déja déclaré (sauf si c'est un proto)
+    // verif que ident est pas déja déclaré (sauf si c'est un proto)
+    // si proto existe verif si le type et argument est le même
+    if (symTab.lookup($IDENT.text) != null
+      && !(TypeCheck.isPrototype(symTab.lookup($IDENT.text).type ))) {
+        System.out.println("Erreur function -> l'ident " +$IDENT.text+ " à déja été déclarée et n'est pas un prototype");
+        System.exit(0);
+    }
+
+    
+    FunctionType typeFunc = new FunctionType(typeFonction,false);
+    for (int i=0; i<listeParam.size(); i++) {
+      typeFunc.extend(listeParam.get(i));
+    }
+
+    if (!symTab.lookup($IDENT.text).type.isCompatible(typeFunc)) {
+        System.out.println("Erreur function -> l'ident " +$IDENT.text+ " la fonction est différente du prototype déclaré");
+        System.exit(0);
+    }
+
+    
+
+    if (symTab.lookup($IDENT.text) == null) {//si il n'y à pas de proto
+      LabelSymbol lb = new LabelSymbol($IDENT.text);
+      FunctionSymbol fonction = new FunctionSymbol(lb,typeFunc);
+      symTab.insert($IDENT.text,fonction);
+    }else{//sinon mettre proto en fonction 
+      ((FunctionType) symTab.lookup($IDENT.text).type).prototype = false;
+    }
 
     code = new Code3a();
+
+    LabelSymbol lbFunction = ((FunctionSymbol) symTab.lookup($IDENT.text)).label;
+  
+    code.append(Code3aGenerator.genCodeLabel(lbFunction));/* code labelNomFonction */
+    code.append(new Inst3a(Inst3a.TAC.BEGINFUNC, null, null, null));/* code beginFunction */
     
-    /* code labelNomFonction */
-    /* code beginFunction */
+    
+    for (int i=0; i<listeParam.size(); i++) {
+      code.append();
+    }
     /* code init var param */
 
     code.append(stat);
 
-
-
     /* code return (si type != void) */
+
+    code.append(new Inst3a(Inst3a.TAC.ENDFUNC, null, null, null));
     /* code endFunction */
   }
   ;
 
 proto [SymbolTable symTab]
-    : ^(PROTO_KW typeProto=type IDENT param_list)
+    : ^(PROTO_KW typeProto=type IDENT listeParam=param_list)
     {
       
       //verif que le proto n'existe pas déjà
-      /*if (symTab.lookup($IDENT.text) != null 
-        && symTab.lookup($IDENT.text).) {
-        
-      }*/
+      if (symTab.lookup($IDENT.text) != null) {
+        System.out.println("Erreur proto -> l'ident " +$IDENT.text+ " à déja été déclarée");
+        System.exit(0);
+      }
 
       LabelSymbol lb = new LabelSymbol($IDENT.text);
 
       FunctionType typeFunc = new FunctionType(typeProto,true);
+      
+      for (int i=0; i<listeParam.size(); i++) {
+        typeFunc.extend(listeParam.get(i));
+      }
       FunctionSymbol protoFonction = new FunctionSymbol(lb,typeFunc);
-
-
-      
-      
-
+      symTab.insert($IDENT.text,protoFonction);
     }
     ;
 
@@ -72,14 +109,14 @@ type returns [Type type]
     | VOID_KW {type = Type.VOID;}
     ;
 
-param_list 
-    : ^(PARAM param*)
-    | PARAM
+param_list returns [List<Type> liste]
+    : ^(PARAM {liste = new ArrayList<>();} (pa=param {liste.add(pa);})*)
+    | PARAM {liste = new ArrayList<>();}
     ;
 
-param
-    : IDENT
-    | ^(ARRAY IDENT)
+param returns [Type type]
+    : IDENT {type =Type.INT;}
+    | ^(ARRAY IDENT {type =Type.POINTER;})
     ;
 
 statement[SymbolTable symTab] returns [Code3a code]
@@ -100,6 +137,7 @@ whileStatement[SymbolTable symTab] returns [Code3a code]
       code = Code3aGenerator.genCodeLabel(lDebut);/* lDebut */
       code.append(e.code); /* exp */
       code.append(Code3aGenerator.genIfz(e.place, lFin));/* ifz lFin*/
+
       code.append(s1);/* code s1 */
       code.append(Code3aGenerator.genGoto(lDebut));/* goto LabelDebut */
       code.append(Code3aGenerator.genCodeLabel(lFin));/* LabelFin */
@@ -139,12 +177,12 @@ inst_list[SymbolTable symTab] returns [Code3a code]
     ;
 
 declaration[SymbolTable symTab] returns [Code3a code]
-  : ^(DECL {code=new Code3a();} (dl=decl_list[symTab] {code.append(dl);} )+ )
+  : ^(DECL {code=new Code3a();} (dl=decl_item[symTab] {code.append(dl);} )+ )
   ;
-
+/* 
 decl_list[SymbolTable symTab] returns [Code3a code]
-  : di=decl_item[symTab] {code=di;} (COM di=decl_item[symTab] {code.append(di);})*
-  ;
+  : {code=new Code3a();} ( di=decl_item[symTab] {code.append(di);})+
+  ;*/
 decl_item[SymbolTable symTab] returns [Code3a code]
   : IDENT 
     {
@@ -156,6 +194,7 @@ decl_item[SymbolTable symTab] returns [Code3a code]
         code = Code3aGenerator.genVar(op);
       }else{
         System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+        System.exit(0);
       }
 
     }
@@ -177,7 +216,8 @@ decl_item[SymbolTable symTab] returns [Code3a code]
 
 
 affectation [SymbolTable symTab] returns [Code3a code]
-: ^(ASSIGN_KW e=expression[symTab] IDENT) {code = Code3aGenerator.genAff($IDENT.text,e,symTab);}
+: ^(ASSIGN_KW e=expression[symTab] IDENT) 
+  {code = Code3aGenerator.genAff($IDENT.text,e,symTab);}
 ;
 
 expression [SymbolTable symTab] returns [ExpAttribute expAtt]

@@ -45,12 +45,9 @@ public class Code3aGenerator {
 			return null;
 		}else{
 			Code3a cod = exp.code;
-        	VarSymbol temp = new VarSymbol(Type.INT,name, symTab.getScope());
 
 
-			symTab.insert(name,temp);
-
-			cod.append(new Inst3a(Inst3a.TAC.COPY,  temp, exp.place, null));
+			cod.append(new Inst3a(Inst3a.TAC.COPY,  symTab.lookup(name), exp.place, null));
 			return cod;
 		}
 	}

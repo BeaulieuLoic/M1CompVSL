@@ -37,4 +37,12 @@ public class TypeCheck {
 		}
 	}
 
+	public static boolean isPrototype(Type elem){
+		if (elem instanceof FunctionType) {
+			return ((FunctionType) elem).prototype;
+		}else{
+			return false;
+		}
+	} 
+
 }

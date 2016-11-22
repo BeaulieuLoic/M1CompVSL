@@ -1,3 +1,4 @@
+PROTO INT test(k,a[])
 FUNC VOID main()
 {
 	INT a, b, c[5]
