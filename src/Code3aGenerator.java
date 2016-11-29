@@ -65,6 +65,12 @@ public class Code3aGenerator {
 		return new Code3a(new Inst3a(Inst3a.TAC.GOTO, l, null, null));
 	}
 
+	public static Code3a genReturn(ExpAttribute exp){
+		Code3a cod = exp.code;
+		cod.append(new Inst3a(Inst3a.TAC.RETURN,  exp.place, null, null));
+		return cod;
+	}
+
 
 
 

@@ -1,4 +1,4 @@
-PROTO INT test(k,a[])
+PROTO INT test(k)
 FUNC VOID main()
 {
 	INT a, b, c[5]
@@ -8,4 +8,9 @@ FUNC VOID main()
 		a := b
 	}
 	DONE
+}
+FUNC INT test(a)
+{
+	a := a
+	RETURN a
 }
