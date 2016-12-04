@@ -3,7 +3,7 @@ FUNC VOID main()
 {
 	INT a[10],b
 	a[b] := b+1
-	READ a[0]
+	READ a[b]
 }
 
 FUNC INT test(a,b,c)

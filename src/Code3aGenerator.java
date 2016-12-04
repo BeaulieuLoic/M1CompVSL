@@ -42,14 +42,18 @@ public class Code3aGenerator {
 		if(symTab.lookup(name) ==null){
 		//trycatch ? ou error
 			System.out.println("Erreur genAff -> variable " + name+" non déclaré");
+			System.exit(0);
 			return null;
-		}else{
-			Code3a cod = exp.code;
-
-
-			cod.append(new Inst3a(Inst3a.TAC.COPY,  symTab.lookup(name), exp.place, null));
-			return cod;
 		}
+		if(!symTab.lookup(name).type.isCompatible(exp.type)){
+			System.out.println("Erreur genAff -> affectation avec un type incompatible ");
+			System.exit(0);
+		}
+		Code3a cod = exp.code;
+
+		cod.append(new Inst3a(Inst3a.TAC.COPY,  symTab.lookup(name), exp.place, null));
+		return cod;
+		
 	}
 
 	public static Code3a genIfz(Operand3a place, LabelSymbol l){
@@ -69,6 +73,12 @@ public class Code3aGenerator {
 		Code3a cod = exp.code;
 		cod.append(new Inst3a(Inst3a.TAC.RETURN,  exp.place, null, null));
 		return cod;
+	}
+
+	public static Code3a genArgs(ExpAttribute exp){
+		Code3a cod = exp.code;
+		cod.append(new Inst3a(Inst3a.TAC.ARG,  exp.place, null, null));
+		return cod;	
 	}
 
 

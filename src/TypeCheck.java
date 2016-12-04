@@ -14,21 +14,24 @@ public class TypeCheck {
 	 * Type checking for a binary operation - in VSL+: integer operations only!
 	 */
 	public static Type checkBinOp(Type t1, Type t2) {
-		if (t1 == Type.INT && t2 == Type.INT)
+		if (t1.isCompatible(Type.INT) && t2.isCompatible(Type.INT))
 			return Type.INT;
 		else {
 			return Type.ERROR;
 		}
 	}
 
+	public static boolean isInt(Type t){
+		return t.isCompatible(Type.INT);
+	}
 
 	public static boolean checkBinOpError(CommonTree token, Type t1, Type t2){
 		if(checkBinOp(t1,t2) == Type.ERROR){
-			if (t1 != Type.INT) {
+			if (!t1.isCompatible(Type.INT)) {
          		Errors.incompatibleTypes(token, Type.INT, t1,null);
         	}
         
-        	if (t2 != Type.INT) {
+        	if (!t2.isCompatible(Type.INT)) {
           		Errors.incompatibleTypes(token, Type.INT, t2,null);
         	}
         	return false;
@@ -44,5 +47,40 @@ public class TypeCheck {
 			return false;
 		}
 	} 
+	
+	public static boolean isFunction(Type elem){
+		return (elem instanceof FunctionType);
+	}
 
+	public static boolean isArrayInt(ExpAttribute expAtt, Operand3a tab, String nomIdent){
+      if (tab == null) {
+        System.out.println("Erreur isArrayInt -> la variable "+nomIdent+ " n'existe pas");
+        return false;
+      }
+
+      if (!TypeCheck.isInt(expAtt.type)) {
+        System.out.println("Erreur isArrayInt -> l'expression donnée n'est pas de type int");
+        return false;
+      }
+
+      if (!(tab instanceof VarSymbol)) {
+        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas une variable");
+        return false;
+      }
+
+
+      if (!(tab.type instanceof ArrayType)) {
+        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas un tableau");
+        return false;
+      }
+
+      ArrayType symbolIdent = (ArrayType) tab.type;
+      ArrayType tmp = new ArrayType(Type.INT, 0);
+
+      if (!(symbolIdent.isCompatible(tmp))) {// utile ?
+        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");
+        return false;
+      }
+		return true;
+	}
 }

@@ -1,0 +1,15 @@
+PROTO VOID f(i, j, t[], m, k[])
+
+FUNC INT main() {
+  INT i, j
+  INT t1[3]
+  INT t2[2]
+  i := 0
+  j := 1
+	RETURN 0
+}
+
+FUNC VOID f(i, j, t, m, k[]) {
+  PRINT i
+}
+
