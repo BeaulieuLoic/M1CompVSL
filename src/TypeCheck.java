@@ -52,19 +52,26 @@ public class TypeCheck {
 		return (elem instanceof FunctionType);
 	}
 
-	public static boolean isArrayInt(ExpAttribute expAtt, Operand3a tab, String nomIdent){
+	public static boolean isArrayInt(CommonTree token, ExpAttribute expAtt, Operand3a tab, String nomIdent){
       if (tab == null) {
-        System.out.println("Erreur isArrayInt -> la variable "+nomIdent+ " n'existe pas");
+        //System.out.println("Erreur TypeCheck.isArrayInt -> la variable "+nomIdent+ " n'existe pas");
+        Errors.unknownIdentifier(token,nomIdent, 
+          "Erreur TypeCheck.isArrayInt -> la variable "+nomIdent+ " n'existe pas");
         return false;
       }
 
       if (!TypeCheck.isInt(expAtt.type)) {
-        System.out.println("Erreur isArrayInt -> l'expression donnée n'est pas de type int");
+        //System.out.println("Erreur TypeCheck.isArrayInt -> l'expression donnée n'est pas de type int");
+        Errors.incompatibleTypes(token,Type.INT,expAtt.type,
+          "Erreur TypeCheck.isArrayInt -> l'expression donnée n'est pas de type int");
+
         return false;
       }
 
       if (!(tab instanceof VarSymbol)) {
-        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas une variable");
+        //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
+        Errors.miscError(token, 
+        	"Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
         return false;
       }
 
@@ -75,7 +82,10 @@ public class TypeCheck {
 
 
       if (!(tab.type instanceof ArrayType)) {
-        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas un tableau");
+        //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau");
+        Errors.incompatibleTypes(token,"Array or POINTER",tab.type,
+          "Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau");
+
         return false;
       }
 
@@ -83,7 +93,9 @@ public class TypeCheck {
       ArrayType tmp = new ArrayType(Type.INT, 0);
 
       if (!(symbolIdent.isCompatible(tmp))) {// utile ?
-        System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");
+        //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");
+        Errors.miscError(token, 
+        	"Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");      	
         return false;
       }
 		return true;

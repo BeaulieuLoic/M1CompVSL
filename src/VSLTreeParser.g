@@ -11,7 +11,8 @@ s [SymbolTable symTab] returns [Code3a code]
     p=program[symTab] 
     {
       code = p; symTab.print();
-      //verif que tout les proto sont définit
+      //verif que tout les proto sont définit ?
+      //que la fonction main existe ?
     }
 
 
@@ -37,8 +38,10 @@ function [SymbolTable symTab] returns [Code3a code]
     // si proto existe verif si le type et argument est le même
    if (prototypeExist
       && !(TypeCheck.isPrototype(symTab.lookup($IDENT.text).type))) {
-        System.out.println("Erreur function -> l'ident " +$IDENT.text+ " à déja été déclarée et n'est pas un prototype");
-        System.exit(0);
+      //System.out.println("Erreur function -> l'ident " +$IDENT.text+ " à déja été déclarée et n'est pas un prototype");
+      Errors.redefinedIdentifier($FUNC_KW,$IDENT.text,
+        "Erreur function -> l'ident " +$IDENT.text+ " à déja été déclarée et n'est pas un prototype");
+      System.exit(0);
     }
     
     
@@ -53,7 +56,9 @@ function [SymbolTable symTab] returns [Code3a code]
 
 
     if(prototypeExist && !symTab.lookup($IDENT.text).type.isCompatible(typeFunc)){
-      System.out.println("Erreur function -> " +$IDENT.text+ ", la fonction est différente du prototype déclaré");
+      //System.out.println("Erreur function -> " +$IDENT.text+ ", la fonction est différente du prototype déclaré");
+      Errors.incompatibleTypes($FUNC_KW,symTab.lookup($IDENT.text).type, typeFunc, 
+        "Erreur function -> " +$IDENT.text+ ", la fonction est différente du prototype déclaré");
       System.exit(0);
     }
 
@@ -100,7 +105,9 @@ proto [SymbolTable symTab]
 
       //verif que le proto n'existe pas déjà
       if (symTab.lookup($IDENT.text) != null) {
-        System.out.println("Erreur proto -> l'ident " +$IDENT.text+ " à déja été déclarée");
+        //System.out.println("Erreur proto -> l'ident " +$IDENT.text+ " à déja été déclarée");
+        Errors.redefinedIdentifier($PROTO_KW, $IDENT.text, 
+          "Erreur proto -> l'ident " +$IDENT.text+ " à déja été déclarée");
         System.exit(0);
       }
 
@@ -163,7 +170,8 @@ param[SymbolTable symTab] returns [Code3a code, Type type]
         $code=code;
         $type=type;
       }else{
-        System.out.println("Erreur param -> l'ident "+$IDENT.text+"à dejà été déclaré");
+        //System.out.println("Erreur param -> l'ident "+$IDENT.text+"à dejà été déclaré");
+        Errors.redefinedIdentifier($IDENT, $IDENT.text, null);
         System.exit(0);
       }
     }
@@ -179,7 +187,8 @@ param[SymbolTable symTab] returns [Code3a code, Type type]
         $code=code;
         $type=type;
       }else{
-        System.out.println("Erreur param -> l'ident "+$IDENT.text+"à dejà été déclaré");
+        //System.out.println("Erreur param -> l'ident "+$IDENT.text+"à dejà été déclaré");
+        Errors.redefinedIdentifier($ARRAY, $IDENT.text, null);
         System.exit(0);
       }
     }
@@ -195,7 +204,8 @@ statement[SymbolTable symTab] returns [Code3a code]
   | ^(RETURN_KW e=expression[symTab])
       {
         if (!TypeCheck.isInt(e.type)) {
-          System.out.println("Erreur return -> l'expression donnée n'est pas de type int");
+          //System.out.println("Erreur return -> l'expression donnée n'est pas de type int");
+          Errors.incompatibleTypes($RETURN_KW,Type.INT,e.type,null);
           System.exit(0);
         }
         code = Code3aGenerator.genReturn(e);
@@ -232,7 +242,9 @@ print_item[SymbolTable symTab] returns [Code3a code]
     {
 
       if (!TypeCheck.isInt(e.type)) {
-        System.out.println("Erreur print_item -> l'expression n'est pas un entier");
+        //System.out.println("Erreur print_item -> l'expression n'est pas un entier");
+        Errors.incompatibleTypes(null,Type.INT,e.type, // changer null !!!!!
+        "Erreur print_item -> l'expression n'est pas un entier");
         System.exit(0);
       }
       code = new Code3a();
@@ -251,21 +263,26 @@ read_item[SymbolTable symTab] returns [Code3a code]
     {
       code = new Code3a();
       if (symTab.lookup($IDENT.text) == null) {
-        System.out.println("Erreur read_item -> la variable "+$IDENT.text+ " n'existe pas");
-        Errors.unknownIdentifier($IDENT,$IDENT.text, null);
+        //System.out.println("Erreur read_item -> la variable "+$IDENT.text+ " n'existe pas");
+        Errors.unknownIdentifier($IDENT,$IDENT.text, 
+          "Erreur read_item -> la variable "+$IDENT.text+ " n'existe pas");
         System.exit(0);
       }
       Operand3a result = symTab.lookup($IDENT.text);
       
-      if(!(result instanceof VarSymbol)){
-        System.out.println("Erreur read_item -> "+$IDENT.text+ " n'est pas une variable");
+      if (!TypeCheck.isInt(result.type)) {
+        //System.out.println("Erreur read_item -> "+$IDENT.text+ " n'est pas une variable de type int");
+        Errors.incompatibleTypes($IDENT,Type.INT,result.type,
+          "Erreur read_item -> "+$IDENT.text+ " n'est pas une variable de type int");
         System.exit(0);
       }
 
-      if (!TypeCheck.isInt(result.type)) {
-        System.out.println("Erreur read_item -> "+$IDENT.text+ " n'est pas une variable de type int");
+      if(!(result instanceof VarSymbol)){
+        //System.out.println("Erreur read_item -> "+$IDENT.text+ " n'est pas une variable");
+        Errors.miscError($IDENT,"Erreur read_item -> "+$IDENT.text+ " n'est pas une variable");
         System.exit(0);
       }
+
 
       code.append(new Code3a(new Inst3a(Inst3a.TAC.CALL, result, SymbDistrib.builtinRead, null)));
 
@@ -275,7 +292,7 @@ read_item[SymbolTable symTab] returns [Code3a code]
     | ^(ARELEM  IDENT exp=expression[symTab]) 
     {
       Operand3a result = symTab.lookup($IDENT.text);
-      if (!TypeCheck.isArrayInt(exp, result, $IDENT.text)) {
+      if (!TypeCheck.isArrayInt($ARELEM,exp, result, $IDENT.text)) {
         System.exit(0);
       }
       code = exp.code;
@@ -289,16 +306,20 @@ read_item[SymbolTable symTab] returns [Code3a code]
 
 
 appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
-  : ^((FCALL_S|FCALL) IDENT {arguments = null;} (arguments = argument_list[symTab])?)
+  : ^((tok=FCALL_S|tok=FCALL) IDENT {arguments = null;} (arguments = argument_list[symTab])?)
   {
-
+    CommonTree token = tok;
     Operand3a identTab = symTab.lookup($IDENT.text); 
     if (identTab == null) {
-        System.out.println("Erreur appelFunction -> la fonction "+$IDENT.text+" n'existe pas");
+        //System.out.println("Erreur appelFunction -> la fonction "+$IDENT.text+" n'existe pas");
+        Errors.unknownIdentifier(token,$IDENT.text, 
+          "Erreur appelFunction -> la fonction "+$IDENT.text+" n'existe pas");
         System.exit(0);
     }
     if (!TypeCheck.isFunction(identTab.type)) {
-        System.out.println("Erreur appelFunction -> l'ident "+$IDENT.text+" n'est pas une fonction");
+        //System.out.println("Erreur appelFunction -> l'ident "+$IDENT.text+" n'est pas une fonction ou un prototype");
+        Errors.incompatibleTypes(token, "FUNC or PROTO",identTab.type,
+          "Erreur appelFunction -> l'ident "+$IDENT.text+" n'est pas une fonction ou un prototype");
         System.exit(0); 
     }
 
@@ -306,10 +327,14 @@ appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
     FunctionType operandFunction = (FunctionType) identTab.type;
     
     if (arguments == null && operandFunction.getArguments().size() != 0) {
-        System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
-        System.exit(0);  
+        //System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
+        Errors.miscError(token, 
+          "Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
+        System.exit(0);
     }else if(arguments != null && arguments.size() != operandFunction.getArguments().size()){
-        System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
+        //System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
+        Errors.miscError(token, 
+          "Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
         System.exit(0);  
     }
 
@@ -318,7 +343,9 @@ appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
       for (int i = 0; i < arguments.size() ; i++) {
         if (!arguments.get(i).type.isCompatible(operandFunction.getArguments().get(i))) {
           if (!((arguments.get(i).type instanceof  ArrayType) && (operandFunction.getArguments().get(i).isCompatible(Type.POINTER)))) {
-            System.out.println("Erreur appelFunction -> le type d'argument est incorrecte lors de l'appel à "+$IDENT.text);
+            //System.out.println("Erreur appelFunction -> le type d'argument est incorrecte lors de l'appel à "+$IDENT.text);
+            Errors.incompatibleTypes(token, operandFunction.getArguments().get(i), arguments.get(i).type, 
+              "Erreur appelFunction -> le type d'argument est incorrecte lors de l'appel à "+$IDENT.text);
             System.exit(0);
           }
         }
@@ -389,10 +416,7 @@ inst_list[SymbolTable symTab] returns [Code3a code]
 declaration[SymbolTable symTab] returns [Code3a code]
   : ^(DECL {code=new Code3a();} (dl=decl_item[symTab] {code.append(dl);} )+ )
   ;
-/* 
-decl_list[SymbolTable symTab] returns [Code3a code]
-  : {code=new Code3a();} ( di=decl_item[symTab] {code.append(di);})+
-  ;*/
+
 decl_item[SymbolTable symTab] returns [Code3a code]
   : IDENT 
     {
@@ -403,7 +427,9 @@ decl_item[SymbolTable symTab] returns [Code3a code]
 
         code = Code3aGenerator.genVar(op);
       }else{
-        System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+        //System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+        Errors.redefinedIdentifier($IDENT, $IDENT.text, 
+          "Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
         System.exit(0);
       }
 
@@ -414,7 +440,8 @@ decl_item[SymbolTable symTab] returns [Code3a code]
       || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
         int sizeArray = Integer.parseInt($INTEGER.text);
         if (sizeArray <= 0) {
-          System.out.println("Erreur déclaration -> La taille donnée au tableau est inférieur ou égale à 0");
+          //System.out.println("Erreur déclaration -> La taille donnée au tableau est inférieur ou égale à 0");
+          Errors.miscError($ARDECL, "Erreur déclaration -> La taille donnée au tableau est inférieur ou égale à 0");
           System.exit(0);
         }
         ArrayType tableau = new ArrayType(Type.INT, sizeArray);
@@ -423,7 +450,9 @@ decl_item[SymbolTable symTab] returns [Code3a code]
 
         code = Code3aGenerator.genVar(op);
       }else{
-        System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+        //System.out.println("Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");
+        Errors.redefinedIdentifier($ARDECL, $IDENT.text, 
+          "Erreur déclaration -> la variable " +$IDENT.text+ " à déja été déclarée");        
         System.exit(0);
       }
     }
@@ -432,11 +461,11 @@ decl_item[SymbolTable symTab] returns [Code3a code]
 
 affectation [SymbolTable symTab] returns [Code3a code]
 : ^(ASSIGN_KW e=expression[symTab] (
-      (i1=IDENT {code = Code3aGenerator.genAff($i1.text,e,symTab);})
+      (i1=IDENT {code = Code3aGenerator.genAff($ASSIGN_KW,$i1.text,e,symTab);})
       |(^(ARELEM  i2=IDENT exp=expression[symTab]))// affect tableau
         {
           Operand3a result = symTab.lookup($i2.text);
-          if (!TypeCheck.isArrayInt(exp, result, $i2.text)) {
+          if (!TypeCheck.isArrayInt($ASSIGN_KW, exp, result, $i2.text)) {
             System.exit(0);
           }
           code = exp.code;
@@ -504,12 +533,15 @@ primary [SymbolTable symTab] returns [ExpAttribute expAtt]
     {
       Operand3a id = symTab.lookup($IDENT.text);
       if (id == null) {
-        System.out.println("Erreur primary -> la variable "+$IDENT.text+ " n'existe pas");
+        //System.out.println("Erreur primary -> la variable "+$IDENT.text+ " n'existe pas");
+        Errors.unknownIdentifier($IDENT,$IDENT.text, 
+          "Erreur primary -> la variable "+$IDENT.text+ " n'existe pas");
         System.exit(0);
       }
 
       if (!(id instanceof VarSymbol)) {
-        System.out.println("Erreur primary -> "+$IDENT.text+ " n'est pas une variable'");
+        //System.out.println("Erreur primary -> "+$IDENT.text+ " n'est pas une variable");
+        Errors.miscError($IDENT, "Erreur primary -> "+$IDENT.text+ " n'est pas une variable");
         System.exit(0);
       }
 
@@ -532,7 +564,7 @@ primary [SymbolTable symTab] returns [ExpAttribute expAtt]
   | ^(ARELEM  IDENT exp=expression[symTab])
     {
       Operand3a result = symTab.lookup($IDENT.text);
-      if (!TypeCheck.isArrayInt(exp, result, $IDENT.text)) {
+      if (!TypeCheck.isArrayInt($ARELEM, exp, result, $IDENT.text)) {
         System.exit(0);
       }
 
@@ -545,10 +577,3 @@ primary [SymbolTable symTab] returns [ExpAttribute expAtt]
       expAtt = new ExpAttribute(Type.INT, code, tmp);
     }
   ;
-
-//expAtt --> expAtt de l'expression pour accédé à l'indice, tableau correspond au tableau utilisé
-array_elem[SymbolTable symTab] returns [ExpAttribute expAtt, VarSymbol tableau]
-    : ^(ARELEM  IDENT exp=expression[symTab])
-    {
-    }
-    ;

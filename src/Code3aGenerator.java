@@ -1,3 +1,5 @@
+import org.antlr.runtime.tree.CommonTree;
+
 /**
  * This class implements all the methods for 3a code generation (NOTE: this
  * class must be coded by the student; the methods indicated here can be seen as
@@ -38,15 +40,19 @@ public class Code3aGenerator {
 		return cod;
 	}
 
-	public static Code3a genAff(String name, ExpAttribute exp, SymbolTable symTab){
+	public static Code3a genAff(CommonTree token, String name, ExpAttribute exp, SymbolTable symTab){
 		if(symTab.lookup(name) ==null){
-		//trycatch ? ou error
-			System.out.println("Erreur genAff -> variable " + name+" non déclaré");
+			//System.out.println("Erreur Code3aGenerator.genAff -> variable " + name+" non déclaré");
+			Errors.unknownIdentifier(token,name,
+				"Erreur Code3aGenerator.genAff -> variable " + name+" non déclaré");
 			System.exit(0);
 			return null;
 		}
 		if(!symTab.lookup(name).type.isCompatible(exp.type)){
-			System.out.println("Erreur genAff -> affectation avec un type incompatible ");
+			//System.out.println("Erreur Code3aGenerator.genAff -> affectation avec un type incompatible");
+			Errors.incompatibleTypes(token, symTab.lookup(name).type, exp.type, 
+				"Erreur Code3aGenerator.genAff -> affectation avec un type incompatible");
+
 			System.exit(0);
 		}
 		Code3a cod = exp.code;
