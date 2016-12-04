@@ -69,6 +69,11 @@ public class TypeCheck {
       }
 
 
+      if (tab.type.isCompatible(Type.POINTER)) {
+      	return true;
+      }
+
+
       if (!(tab.type instanceof ArrayType)) {
         System.out.println("Erreur isArrayInt -> "+nomIdent+" n'est pas un tableau");
         return false;

@@ -192,7 +192,14 @@ statement[SymbolTable symTab] returns [Code3a code]
   | {symTab.enterScope();} b=block[symTab] {symTab.leaveScope();} { code = b; }
   | i = ifStatement[symTab] {code = i;}
   | w = whileStatement[symTab] {code = w;}
-  | ^(RETURN_KW e=expression[symTab]){code = Code3aGenerator.genReturn(e);} 
+  | ^(RETURN_KW e=expression[symTab])
+      {
+        if (!TypeCheck.isInt(e.type)) {
+          System.out.println("Erreur return -> l'expression donnée n'est pas de type int");
+          System.exit(0);
+        }
+        code = Code3aGenerator.genReturn(e);
+      } 
   | aF = appelFunction[symTab] {code = aF.code;}
   | f = funcPrint[symTab] {code = f;}
   | f = funcRead[symTab] {code = f;}
@@ -294,24 +301,29 @@ appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
         System.out.println("Erreur appelFunction -> l'ident "+$IDENT.text+" n'est pas une fonction");
         System.exit(0); 
     }
+
     FunctionSymbol functionSymb = (FunctionSymbol) identTab;
     FunctionType operandFunction = (FunctionType) identTab.type;
+    
     if (arguments == null && operandFunction.getArguments().size() != 0) {
         System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
         System.exit(0);  
-    }else if(arguments.size() != operandFunction.getArguments().size()){
+    }else if(arguments != null && arguments.size() != operandFunction.getArguments().size()){
         System.out.println("Erreur appelFunction -> le nombre de paramètre fournis pour la fonction "+$IDENT.text+" est incorrecte");
         System.exit(0);  
     }
 
     Code3a code = new Code3a();
-
-    for (int i = 0; i < arguments.size() ; i++) {
-      if (!arguments.get(i).type.isCompatible(operandFunction.getArguments().get(i))) {
-        System.out.println("Erreur appelFunction -> le type d'argument est incorrecte lors de l'appel à "+$IDENT.text);
-        System.exit(0);
+    if (arguments != null) {
+      for (int i = 0; i < arguments.size() ; i++) {
+        if (!arguments.get(i).type.isCompatible(operandFunction.getArguments().get(i))) {
+          if (!((arguments.get(i).type instanceof  ArrayType) && (operandFunction.getArguments().get(i).isCompatible(Type.POINTER)))) {
+            System.out.println("Erreur appelFunction -> le type d'argument est incorrecte lors de l'appel à "+$IDENT.text);
+            System.exit(0);
+          }
+        }
+        code.append(Code3aGenerator.genArgs(arguments.get(i)));
       }
-      code.append(Code3aGenerator.genArgs(arguments.get(i)));
     }
 
     VarSymbol temp = SymbDistrib.newTemp();
