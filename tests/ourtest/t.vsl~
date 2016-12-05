@@ -1,0 +1,7 @@
+PROTO INT fact(k)
+FUNC VOID main()
+{
+  INT n,i, t[11]
+    n := t[1]
+}
+ 

@@ -1,13 +1,14 @@
-PROTO INT test(a,b,c)
+PROTO INT test(a,b[])
 FUNC VOID main()
 {
 	INT a[10],b
 	a[b] := b+1
-	READ a[0]
+	PRINT 1
 }
 
-FUNC INT test(a,b,c)
+FUNC INT test(a,b[])
 {
+	PRINT test
 	RETURN 1
 }
 
