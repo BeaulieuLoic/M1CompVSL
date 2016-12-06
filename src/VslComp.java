@@ -68,7 +68,7 @@ public class VslComp {
 			// an expression). >>>
 			VSLParser.s_return r = parser.s();
 			// The parser produces an AST.
-			System.out.println("\nParcours de l'AST\n");
+			//System.out.println("\nParcours de l'AST\n");
 
 			CommonTree t = (CommonTree) r.getTree();
 			// If debugging is on, this prints the resulting tree in LISP
@@ -84,13 +84,13 @@ public class VslComp {
 				// one wishes to parse just a fragment of the language (e.g.
 				// begin with an expression). >>>
 				Code3a code = tparser.s(new SymbolTable());
-				code.print();
+				//code.print();
 				// We prepare the MIPS code generator, which will compile
 				// the three-address code into MIPS assembly.
 				
-				File file = new File("../codeMIPS/sortie");
-				PrintStream printStream = new PrintStream(file);
-				System.setOut(printStream);
+				//File file = new File("../nachos/test/codeMips.s");
+				//PrintStream printStream = new PrintStream(file);
+				//System.setOut(printStream);
 
 
 				MIPSCodeGenerator cg = new MIPSCodeGenerator(System.out); // NOT NEEDED AT THE BEGINNING
@@ -99,7 +99,7 @@ public class VslComp {
 				// to add the header and footer for the main function.
 				// This allows the program to be run using the NachOS
 				// emulator.
-				code = cg.addStubMain(code);  // NOT NEEDED AT THE BEGINNING
+				//code = cg.addStubMain(code);  // NOT NEEDED AT THE BEGINNING
 					
 				// Generates the actual MIPS code, printing it to the
 				// stream chosen previously (by default, System.out).

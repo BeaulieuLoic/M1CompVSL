@@ -25,6 +25,7 @@ public class TypeCheck {
 		return t.isCompatible(Type.INT);
 	}
 
+//Verifie les types des éléments d'une opération binaire
 	public static boolean checkBinOpError(CommonTree token, Type t1, Type t2){
 		if(checkBinOp(t1,t2) == Type.ERROR){
 			if (!t1.isCompatible(Type.INT)) {
@@ -53,6 +54,8 @@ public class TypeCheck {
 	}
 
 	public static boolean isArrayInt(CommonTree token, ExpAttribute expAtt, Operand3a tab, String nomIdent){
+      
+      // Vérifie que le tableau existe bien dans la table des symboles
       if (tab == null) {
         //System.out.println("Erreur TypeCheck.isArrayInt -> la variable "+nomIdent+ " n'existe pas");
         Errors.unknownIdentifier(token,nomIdent, 
@@ -60,6 +63,7 @@ public class TypeCheck {
         return false;
       }
 
+      // vérifie que ce qui est écris entre [] est bien un entier
       if (!TypeCheck.isInt(expAtt.type)) {
         //System.out.println("Erreur TypeCheck.isArrayInt -> l'expression donnée n'est pas de type int");
         Errors.incompatibleTypes(token,Type.INT,expAtt.type,
@@ -68,6 +72,7 @@ public class TypeCheck {
         return false;
       }
 
+      // vérifie que ce que l'on récupère dans la table des symbole est une variable
       if (!(tab instanceof VarSymbol)) {
         //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
         Errors.miscError(token, 
@@ -76,11 +81,12 @@ public class TypeCheck {
       }
 
 
+      // si type = pointeur alors plus rien à vérifié
       if (tab.type.isCompatible(Type.POINTER)) {
       	return true;
       }
 
-
+      //vérifie que le type de la varaible est bien un tableau
       if (!(tab.type instanceof ArrayType)) {
         //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau");
         Errors.incompatibleTypes(token,"Array or POINTER",tab.type,
@@ -92,6 +98,7 @@ public class TypeCheck {
       ArrayType symbolIdent = (ArrayType) tab.type;
       ArrayType tmp = new ArrayType(Type.INT, 0);
 
+      // vérifie que c'est bien un tableau d'int
       if (!(symbolIdent.isCompatible(tmp))) {// utile ?
         //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");
         Errors.miscError(token, 

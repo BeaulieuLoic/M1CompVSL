@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 ./src/VSLTreeParser.g 2016-12-05 15:25:05
+// $ANTLR 3.5.2 ./src/VSLTreeParser.g 2016-12-06 09:02:32
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
@@ -102,7 +102,7 @@ public class VSLTreeParser extends TreeParser {
 			state._fsp--;
 
 
-			      code = p; symTab.print();
+			      code = p; //symTab.print();
 			      //verif que tout les proto sont définit ?
 			      //que la fonction main existe (et n'est pas qu'un proto)?
 			      // paramètre sont l modifiable ?
@@ -1053,7 +1053,7 @@ public class VSLTreeParser extends TreeParser {
 					TEXT12=(CommonTree)match(input,TEXT,FOLLOW_TEXT_in_print_item647); 
 
 					      code = new Code3a();
-					      Data3a dataStr = new Data3a((TEXT12!=null?TEXT12.getText():null));
+					      Data3a dataStr = new Data3a((TEXT12!=null?TEXT12.getText():null).substring(1,(TEXT12!=null?TEXT12.getText():null).length()-1));
 					      code.appendData(dataStr);
 
 					      code.append(new Inst3a(Inst3a.TAC.ARG,  dataStr.getLabel(), null, null));

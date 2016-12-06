@@ -10,7 +10,7 @@ s [SymbolTable symTab] returns [Code3a code]
   :
     p=program[symTab] 
     {
-      code = p; symTab.print();
+      code = p; //symTab.print();
       //verif que tout les proto sont définit ?
       //que la fonction main existe (et n'est pas qu'un proto)?
       // paramètre sont l modifiable ?
@@ -240,7 +240,7 @@ print_item[SymbolTable symTab] returns [Code3a code]
     : TEXT 
     {
       code = new Code3a();
-      Data3a dataStr = new Data3a($TEXT.text);
+      Data3a dataStr = new Data3a($TEXT.text.substring(1,$TEXT.text.length()-1));
       code.appendData(dataStr);
 
       code.append(new Inst3a(Inst3a.TAC.ARG,  dataStr.getLabel(), null, null));
@@ -303,6 +303,7 @@ read_item[SymbolTable symTab] returns [Code3a code]
     | ^(ARELEM  IDENT exp=expression[symTab]) 
     {
       Operand3a result = symTab.lookup($IDENT.text);
+      //On verifie que on a bien un tableau ou un pointeur
       if (!TypeCheck.isArrayInt($ARELEM,exp, result, $IDENT.text)) {
         System.exit(0);
       }
@@ -320,6 +321,7 @@ read_item[SymbolTable symTab] returns [Code3a code]
 appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
   : ^((tok=FCALL_S|tok=FCALL) IDENT {arguments = null;} (arguments = argument_list[symTab])?)
   {
+    //Le token est utile seulement pour l'affichage des erreurs
     CommonTree token = tok;
     Operand3a identTab = symTab.lookup($IDENT.text); 
     if (identTab == null) {
@@ -353,6 +355,7 @@ appelFunction[SymbolTable symTab] returns [ExpAttribute expAtt]
     Code3a code = new Code3a();
     VarSymbol temp = SymbDistrib.newTemp();
     code.append(Code3aGenerator.genVar(temp));
+    //Verifie que la liste des arguments n'est pas nulle, pour pouvoir la comparer a la liste des parametres de la fonction
     if (arguments != null) {
       for (int i = 0; i < arguments.size() ; i++) {
         if (!arguments.get(i).type.isCompatible(operandFunction.getArguments().get(i))) {
@@ -405,7 +408,7 @@ ifStatement[SymbolTable symTab] returns [Code3a code]
 
       if (s2 == null) {
         code.append(Code3aGenerator.genCodeLabel(l0));/*label l0*/
-      }else{// si il y à un else
+      }else{// si il y à un else (dans le code Vsl)
         LabelSymbol l1 = SymbDistrib.newLabel();  
         
         code.append(Code3aGenerator.genGoto(l1));/*goto l1*/
@@ -433,8 +436,9 @@ declaration[SymbolTable symTab] returns [Code3a code]
 decl_item[SymbolTable symTab] returns [Code3a code]
   : IDENT 
     {
-      if(symTab.lookup($IDENT.text)==null // on vérifié que l'ident n'existe pas déja ou si il existe, il ce situe à un autre niveau, sinon erreur
-      || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
+    // on vérifie que l'ident n'existe pas déja ou si il existe, il ce situe à un autre niveau, sinon erreur
+      if(symTab.lookup($IDENT.text)==null 
+        || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
         VarSymbol op = new VarSymbol(Type.INT, $IDENT.text, symTab.getScope());
         symTab.insert($IDENT.text,op);
 
@@ -449,8 +453,8 @@ decl_item[SymbolTable symTab] returns [Code3a code]
     }
   | ^(ARDECL IDENT INTEGER)// tableau
     {
-      if(symTab.lookup($IDENT.text)==null// on vérifié que l'ident n'existe pas déja ou si il existe, il ce situe à un autre niveau,
-      || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
+      if(symTab.lookup($IDENT.text)==null// on vérifie que l'ident n'existe pas déja ou si il existe, il ce situe à un autre niveau,
+        || symTab.lookup($IDENT.text).getScope() != symTab.getScope()){
         int sizeArray = Integer.parseInt($INTEGER.text);
         if (sizeArray <= 0) {// interdit les tableau de taille <= 0
           //System.out.println("Erreur déclaration -> La taille donnée au tableau est inférieur ou égale à 0");

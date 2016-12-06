@@ -1,14 +1,6 @@
-PROTO INT test(a,b[])
 FUNC VOID main()
 {
-	INT a[10],b
-	a[b] := b+1
-	PRINT 1
+	INT a
+	a := 0
+	PRINT a
 }
-
-FUNC INT test(a,b[])
-{
-	PRINT test
-	RETURN 1
-}
-
