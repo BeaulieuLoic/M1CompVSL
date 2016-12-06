@@ -1,6 +1,7 @@
-Compilation : 
-$	cd src/
+Compilation :
+se positionner dans le src 
 $	./make.sh
+Le programme ./make.sh va juste faire "cd .." et executé le makefile fournis à l'origine puis ce remetre dans le src
 
 Execution :
 $	java VslComp fichierACompiler
