@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 ./src/VSLParser.g 2016-11-01 17:54:58
+// $ANTLR 3.5.2 ./src/VSLParser.g 2016-12-06 15:46:36
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -406,7 +406,7 @@ public class VSLParser extends Parser {
 
 			stream_statement.add(statement11.getTree());
 			// AST REWRITE
-			// elements: param_list, statement, FUNC_KW, type, IDENT
+			// elements: statement, FUNC_KW, param_list, IDENT, type
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1075,7 +1075,7 @@ public class VSLParser extends Parser {
 
 					stream_expression.add(expression29.getTree());
 					// AST REWRITE
-					// elements: expression, ASSIGN_KW, IDENT
+					// elements: IDENT, ASSIGN_KW, expression
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1120,7 +1120,7 @@ public class VSLParser extends Parser {
 
 					stream_expression.add(expression32.getTree());
 					// AST REWRITE
-					// elements: array_elem, ASSIGN_KW, expression
+					// elements: ASSIGN_KW, array_elem, expression
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1463,7 +1463,7 @@ public class VSLParser extends Parser {
 					stream_RC.add(RC59);
 
 					// AST REWRITE
-					// elements: inst_list, declaration
+					// elements: declaration, inst_list
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1601,7 +1601,7 @@ public class VSLParser extends Parser {
 			stream_RB.add(RB66);
 
 			// AST REWRITE
-			// elements: expression, IDENT
+			// elements: IDENT, expression
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -2191,7 +2191,7 @@ public class VSLParser extends Parser {
 					stream_RP.add(RP82);
 
 					// AST REWRITE
-					// elements: IDENT, argument_list
+					// elements: argument_list, IDENT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -3024,7 +3024,7 @@ public class VSLParser extends Parser {
 					stream_RB.add(RB110);
 
 					// AST REWRITE
-					// elements: IDENT, INTEGER
+					// elements: INTEGER, IDENT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 

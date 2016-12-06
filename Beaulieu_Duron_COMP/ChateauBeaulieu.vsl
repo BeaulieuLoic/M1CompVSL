@@ -1,0 +1,50 @@
+PROTO VOID tostringarrayop(tab[], taille,op)
+PROTO INT operation(a,b,op)
+FUNC VOID main()
+{
+	INT tab[5],i,t,op
+	t := 5
+	
+	i := t-1
+	WHILE i+1 DO
+	{
+		PRINT "Valeur indice : ", i , " "
+		READ tab[i]
+		i := i - 1
+	}
+	DONE
+
+	tab[0] := 1+1
+
+	PRINT "Operation : \n0:Addition\n!0:Magical Operation\n"
+	READ op
+	PRINT "\n"
+	tostringarrayop(tab,t,op)
+}
+FUNC VOID tostringarrayop(tab[], taille,op)
+{
+	INT j
+	j := taille-1
+
+	WHILE j+1 DO
+	{
+		PRINT "Avant : ",tab[j]," Après : ",operation(tab[j],tab[j],op), "\n"
+		j := j - 1
+	}
+	DONE
+}
+
+FUNC INT operation(a,b,op)
+{
+	IF op
+	THEN
+	{
+		RETURN a*b/2-1
+	}
+	ELSE
+	{
+		RETURN a+b
+	}
+	FI
+}
+
