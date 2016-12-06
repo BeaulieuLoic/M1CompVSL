@@ -56,9 +56,8 @@ public class TypeCheck {
 
   /**
    * Verification du type pour un tableau.
-   * Verifie que tab est bien dans la table des symboles 
-   * et que c'est bien un tableau d'int
-   * ou un pointeur.
+   * Verifie que tab n'est pas null (ce qui revient à tester si tab est bien dans la table des symboles)
+   * et que c'est bien un tableau d'int ou un pointeur.
    *
    * @param token utile uniquement pour l'affichage d'erreur. 
    * @param expAtt ce qu'on met entre [] , c'est a dire sa taille.

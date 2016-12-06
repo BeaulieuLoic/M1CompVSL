@@ -88,7 +88,7 @@ public class VslComp {
 				// We prepare the MIPS code generator, which will compile
 				// the three-address code into MIPS assembly.
 				
-				//File file = new File("../nachos/test/codeMips.s");
+				//File file = new File("../nachos/test/out.s");
 				//PrintStream printStream = new PrintStream(file);
 				//System.setOut(printStream);
 

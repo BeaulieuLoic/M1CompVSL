@@ -9,56 +9,55 @@ import org.antlr.runtime.tree.CommonTree;
  */
 public class TypeCheck {
 
-	// an Example
-	/**
-	 * Type checking for a binary operation - in VSL+: integer operations only!
-	 */
-	public static Type checkBinOp(Type t1, Type t2) {
-		if (t1.isCompatible(Type.INT) && t2.isCompatible(Type.INT))
-			return Type.INT;
-		else {
-			return Type.ERROR;
-		}
-	}
+  // an Example
+  /**
+   * Type checking for a binary operation - in VSL+: integer operations only!
+   */
+  public static Type checkBinOp(Type t1, Type t2) {
+    if (t1.isCompatible(Type.INT) && t2.isCompatible(Type.INT))
+      return Type.INT;
+    else {
+      return Type.ERROR;
+    }
+  }
 
-	public static boolean isInt(Type t){
-		return t.isCompatible(Type.INT);
-	}
+  public static boolean isInt(Type t){
+    return t.isCompatible(Type.INT);
+  }
 
 //Verifie les types des éléments d'une opération binaire
-	public static boolean checkBinOpError(CommonTree token, Type t1, Type t2){
-		if(checkBinOp(t1,t2) == Type.ERROR){
-			if (!t1.isCompatible(Type.INT)) {
-         		Errors.incompatibleTypes(token, Type.INT, t1,null);
-        	}
+  public static boolean checkBinOpError(CommonTree token, Type t1, Type t2){
+    if(checkBinOp(t1,t2) == Type.ERROR){
+      if (!t1.isCompatible(Type.INT)) {
+            Errors.incompatibleTypes(token, Type.INT, t1,null);
+          }
         
-        	if (!t2.isCompatible(Type.INT)) {
-          		Errors.incompatibleTypes(token, Type.INT, t2,null);
-        	}
-        	return false;
-		}else{
-			return true;
-		}
-	}
+          if (!t2.isCompatible(Type.INT)) {
+              Errors.incompatibleTypes(token, Type.INT, t2,null);
+          }
+          return false;
+    }else{
+      return true;
+    }
+  }
 
-	public static boolean isPrototype(Type elem){
-		if (elem instanceof FunctionType) {
-			return ((FunctionType) elem).prototype;
-		}else{
-			return false;
-		}
-	} 
-	
-	public static boolean isFunction(Type elem){
-		return (elem instanceof FunctionType);
-	}
+  public static boolean isPrototype(Type elem){
+    if (elem instanceof FunctionType) {
+      return ((FunctionType) elem).prototype;
+    }else{
+      return false;
+    }
+  } 
+  
+  public static boolean isFunction(Type elem){
+    return (elem instanceof FunctionType);
+  }
 
 
   /**
    * Verification du type pour un tableau.
-   * Verifie que tab est bien dans la table des symboles 
-   * et que c'est bien un tableau d'int
-   * ou un pointeur.
+   * Verifie que tab n'est pas null (ce qui revient à tester si tab est bien dans la table des symboles)
+   * et que c'est bien un tableau d'int ou un pointeur.
    *
    * @param token utile uniquement pour l'affichage d'erreur. 
    * @param expAtt ce qu'on met entre [] , c'est a dire sa taille.
@@ -66,7 +65,7 @@ public class TypeCheck {
    * @param nomIdent utile uniquement pour l'affichage d'erreur.
    *
    */
-	public static boolean isArrayInt(CommonTree token, ExpAttribute expAtt, Operand3a tab, String nomIdent){
+  public static boolean isArrayInt(CommonTree token, ExpAttribute expAtt, Operand3a tab, String nomIdent){
       
       // Vérifie que le tableau existe bien dans la table des symboles
       if (tab == null) {
@@ -89,14 +88,14 @@ public class TypeCheck {
       if (!(tab instanceof VarSymbol)) {
         //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
         Errors.miscError(token, 
-        	"Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
+          "Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas une variable");
         return false;
       }
 
 
       // si type = pointeur alors plus rien à vérifié
       if (tab.type.isCompatible(Type.POINTER)) {
-      	return true;
+        return true;
       }
 
       //vérifie que le type de la varaible est bien un tableau
@@ -115,9 +114,9 @@ public class TypeCheck {
       if (!(symbolIdent.isCompatible(tmp))) {// utile ?
         //System.out.println("Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");
         Errors.miscError(token, 
-        	"Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");      	
+          "Erreur TypeCheck.isArrayInt -> "+nomIdent+" n'est pas un tableau d'int");        
         return false;
       }
-		return true;
-	}
+    return true;
+  }
 }

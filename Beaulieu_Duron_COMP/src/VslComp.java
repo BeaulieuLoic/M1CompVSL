@@ -93,7 +93,7 @@ public class VslComp {
 				//System.setOut(printStream);
 
 
-				MIPSCodeGenerator cg = new MIPSCodeGenerator(System.out); // NOT NEEDED AT THE BEGINNING
+				//MIPSCodeGenerator cg = new MIPSCodeGenerator(System.out); // NOT NEEDED AT THE BEGINNING
 					
 				// NOTE: if necessary, uncomment the call to addStubMain
 				// to add the header and footer for the main function.

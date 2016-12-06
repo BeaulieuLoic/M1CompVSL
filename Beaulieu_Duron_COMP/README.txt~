@@ -12,5 +12,5 @@ Pour afficher le code 3 adresse produit :
 dan VslComp.java, enlever le commentaire ligne 87
 
 Pour produire le code MIPS dans un fichier :
-enlever les commentaires ligne 91 (et eventuellement changer le nom de fichier), 92, 93 et 96.
+enlever les commentaires ligne
 
